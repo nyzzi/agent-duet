@@ -1,0 +1,36 @@
+{
+  "name": "agent-duet",
+  "version": "0.1.0",
+  "description": "Two AI coding agents (Claude + GitHub Copilot) in a peer-review loop on a shared project.",
+  "keywords": ["ai", "claude", "copilot", "code-review", "agent", "cli", "llm"],
+  "license": "MIT",
+  "author": "fishfastapp@gmail.com",
+  "type": "module",
+  "bin": {
+    "agent-duet": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.131",
+    "chalk": "^5.6.2",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
