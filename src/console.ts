@@ -4,6 +4,7 @@ import chalk, { type ChalkInstance } from "chalk";
 const AGENT_COLORS: Record<string, ChalkInstance> = {
   claude: chalk.cyan,
   copilot: chalk.magenta,
+  codex: chalk.green,
 };
 
 function agentChalk(agent: string): ChalkInstance {

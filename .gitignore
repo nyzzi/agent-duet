@@ -4,3 +4,4 @@ transcripts/
 *.log
 .env
 .env.local
+.claude/

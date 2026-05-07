@@ -2,6 +2,7 @@
 import { Command } from "commander";
 import { resolve } from "node:path";
 import { ClaudeAdapter } from "./adapters/claude.js";
+import { CodexAdapter } from "./adapters/codex.js";
 import { CopilotAdapter } from "./adapters/copilot.js";
 import type { Adapter, AgentMode } from "./adapters/types.js";
 import { printDone, printError, printStartBanner } from "./console.js";
@@ -61,17 +62,18 @@ IMPORTANT: Only you (the reviewer) can end the implementation phase.`;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-type AgentName = "claude" | "copilot";
+type AgentName = "claude" | "copilot" | "codex";
 
 function makeAdapter(name: AgentName, squad: boolean, yolo: boolean): Adapter {
   if (name === "claude") return new ClaudeAdapter();
   if (name === "copilot") return new CopilotAdapter({ squad, yolo });
+  if (name === "codex") return new CodexAdapter();
   throw new Error(`Unknown agent: ${name as string}`);
 }
 
 function parseAgent(value: string): AgentName {
-  if (value === "claude" || value === "copilot") return value;
-  throw new Error(`Invalid agent "${value}". Expected "claude" or "copilot".`);
+  if (value === "claude" || value === "copilot" || value === "codex") return value;
+  throw new Error(`Invalid agent "${value}". Expected "claude", "copilot", or "codex".`);
 }
 
 function parseMode(value: string): AgentMode {
@@ -88,8 +90,8 @@ program
   .description("Two AI agents: plan together, then implement and review in rounds.")
   .option("--project <path>", "project directory both agents work in")
   .option("--task <text>", "what the agents should accomplish together")
-  .option("--reviewer <name>", "reviewer agent: claude | copilot", "claude")
-  .option("--implementer <name>", "implementer agent: claude | copilot", "copilot")
+  .option("--reviewer <name>", "reviewer agent: claude | copilot | codex", "claude")
+  .option("--implementer <name>", "implementer agent: claude | copilot | codex", "copilot")
   .option("--reviewer-mode <mode>", "implementer file access during implementation: read | write", "read")
   .option("--implementer-mode <mode>", "implementer file access during implementation: read | write", "write")
   .option("--plan-rounds <n>", "max rounds for planning phase", (v) => parseInt(v, 10), 4)

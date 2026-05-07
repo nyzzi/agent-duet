@@ -5,31 +5,27 @@ import { printHeartbeat } from "../console.js";
 
 const HEARTBEAT_MS = 30_000;
 
-export interface CopilotAdapterOptions {
-  squad?: boolean;
-  yolo?: boolean;
+export interface CodexAdapterOptions {
   binary?: string;
   extraArgs?: string[];
 }
 
-export class CopilotAdapter implements Adapter {
-  readonly name = "copilot";
+export class CodexAdapter implements Adapter {
+  readonly name = "codex";
 
-  constructor(private readonly opts: CopilotAdapterOptions = {}) {}
+  constructor(private readonly opts: CodexAdapterOptions = {}) {}
 
   async run(input: AgentTurnInput): Promise<AgentTurnResult> {
-    const args: string[] = [];
-    if (this.opts.squad) args.push("--agent", "squad");
-    if (this.opts.yolo) args.push("--yolo");
+    const args: string[] = ["exec", "--ask-for-approval", "never"];
     if (input.mode === "read") {
-      args.push("--deny-tool", "write");
+      args.push("--sandbox", "read-only");
     } else {
-      args.push("--allow-all-tools");
+      args.push("--sandbox", "workspace-write");
     }
     if (this.opts.extraArgs) args.push(...this.opts.extraArgs);
-    // Prompt is delivered via stdin to avoid Windows shell quoting issues.
+    args.push("-"); // read prompt from stdin
 
-    const binary = this.opts.binary ?? "copilot";
+    const binary = this.opts.binary ?? "codex";
     const startTime = Date.now();
     let lastActivity = startTime;
 
@@ -48,7 +44,7 @@ export class CopilotAdapter implements Adapter {
       const heartbeat = setInterval(() => {
         if (Date.now() - lastActivity >= HEARTBEAT_MS) {
           const elapsed = formatElapsed(Date.now() - startTime);
-          printHeartbeat("copilot", elapsed, "still working… (no output yet)");
+          printHeartbeat("codex", elapsed, "still working… (no output yet)");
           lastActivity = Date.now();
         }
       }, HEARTBEAT_MS);
@@ -67,7 +63,7 @@ export class CopilotAdapter implements Adapter {
 
       child.on("error", (err) => {
         clearInterval(heartbeat);
-        resolve({ output: `[copilot spawn error: ${err.message}]`, exitCode: 1 });
+        resolve({ output: `[codex spawn error: ${err.message}]`, exitCode: 1 });
       });
 
       child.on("close", (code) => {

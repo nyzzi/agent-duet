@@ -2,7 +2,7 @@
 
 Two AI coding agents in a peer-review loop on a shared project.
 
-`agent-duet` orchestrates a turn-by-turn exchange between **Claude** (via the [Claude Agent SDK](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk)) and **GitHub Copilot** (via the `copilot` CLI, optionally as a [Squad](https://github.com/bradygaster/squad) agent). One agent is the **reviewer** (read-only by default), the other is the **implementer** (read + write). The orchestrator pipes each turn's output into the next turn's prompt and writes a single Markdown transcript of the whole exchange.
+`agent-duet` orchestrates a turn-by-turn exchange between any two of **Claude** (via the [Claude Agent SDK](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk)), **GitHub Copilot** (via the `copilot` CLI, optionally as a [Squad](https://github.com/bradygaster/squad) agent), and **OpenAI Codex** (via the `codex` CLI). One agent is the **reviewer** (read-only by default), the other is the **implementer** (read + write). The orchestrator pipes each turn's output into the next turn's prompt and writes a single Markdown transcript of the whole exchange.
 
 ## Why
 
@@ -11,8 +11,9 @@ If you've ever fed Claude's review notes to Copilot by hand, then handed Copilot
 ## Prerequisites
 
 - **Node.js ≥ 20**
-- **GitHub Copilot CLI** installed and authenticated (`copilot --version`)
-- **Anthropic credentials** for the Claude Agent SDK — either `ANTHROPIC_API_KEY` in env, or an authenticated Claude Code install on the same machine
+- **Anthropic credentials** for the Claude Agent SDK — either `ANTHROPIC_API_KEY` in env, or an authenticated Claude Code install on the same machine (required if Claude is one of the two agents)
+- **GitHub Copilot CLI** installed and authenticated (`copilot --version`) — required if Copilot is one of the two agents
+- **OpenAI Codex CLI** installed and authenticated (`codex --version`) — required if Codex is one of the two agents
 - (Optional) [Squad](https://github.com/bradygaster/squad) installed if you want `--squad`
 
 ## Install
@@ -88,6 +89,8 @@ node dist/index.js --resume transcripts\<run file name>.md --squad --yolo
 - **Claude (write mode):** `permissionMode: "acceptEdits"`, edit tools allowed.
 - **Copilot (read mode):** spawned as `copilot --deny-tool write -p "..."`.
 - **Copilot (write mode):** spawned as `copilot --allow-all-tools -p "..."`.
+- **Codex (read mode):** spawned as `codex exec --ask-for-approval never --sandbox read-only -` (prompt on stdin).
+- **Codex (write mode):** spawned as `codex exec --ask-for-approval never --sandbox workspace-write -`.
 
 With `--squad`, the Copilot invocation becomes `copilot --agent squad ...`.
 
@@ -143,8 +146,9 @@ src/
     types.ts          Adapter interface
     claude.ts         Claude Agent SDK adapter
     copilot.ts        copilot CLI subprocess adapter
+    codex.ts          codex CLI subprocess adapter
 ```
 
 ## Status
 
-v0.1.0 — fixed roles per run (reviewer / implementer), two agents (claude / copilot). Roadmap: per-round role swapping, more agents, stricter Copilot tool filtering.
+Fixed roles per run (reviewer / implementer). Supported agents: claude, copilot, codex. Roadmap: per-round role swapping, stricter tool filtering.
