@@ -88,7 +88,7 @@ const program = new Command();
 program
   .name("agent-duet")
   .description("Two AI agents: plan together, then implement and review in rounds.")
-  .option("--project <path>", "project directory both agents work in")
+  .option("--project <path>", "project directory both agents work in (defaults to current working directory)")
   .option("--task <text>", "what the agents should accomplish together")
   .option("--reviewer <name>", "reviewer agent: claude | copilot | codex", "claude")
   .option("--implementer <name>", "implementer agent: claude | copilot | codex", "copilot")
@@ -122,17 +122,13 @@ program
     }
 
     // ── Validate required args ───────────────────────────────────────────
-    if (!opts.project && !resumedState) {
-      printError("--project is required (or use --resume to continue a prior run).");
-      process.exit(1);
-    }
     if (!opts.task && !resumedState) {
       printError("--task is required (or use --resume to continue a prior run).");
       process.exit(1);
     }
 
     // ── Merge CLI + resumed state ────────────────────────────────────────
-    const cwd = resolve(opts.project ?? resumedState!.cwd);
+    const cwd = resolve(opts.project ?? resumedState?.cwd ?? process.cwd());
     const task = (opts.task ?? resumedState!.task) as string;
     const reviewerName = parseAgent(opts.reviewer ?? resumedState?.reviewer ?? "claude");
     const implementerName = parseAgent(opts.implementer ?? resumedState?.implementer ?? "copilot");

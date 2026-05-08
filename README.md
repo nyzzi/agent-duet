@@ -35,7 +35,14 @@ npm link    # then `agent-duet --help` from anywhere
 
 ## Usage
 
-Minimal — relies on defaults for everything except project and task:
+Minimal — `cd` into the project and pass only `--task`. `--project` defaults to the current working directory:
+
+```bash
+cd ./my-app
+agent-duet --task "Review this codebase for quality and security issues."
+```
+
+Or pass `--project` explicitly from anywhere:
 
 ```bash
 agent-duet \
@@ -46,9 +53,7 @@ agent-duet \
 Or directly from the build output:
 
 ```bash
-node dist/index.js \
-  --project ./my-app \
-  --task "Review this codebase for quality and security issues."
+node dist/index.js --task "Review this codebase for quality and security issues."
 ```
 
 Full form with every knob:
