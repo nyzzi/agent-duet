@@ -157,7 +157,7 @@ program
     // When resuming, append to the original transcript unless --transcript overrides.
     const transcriptPath = opts.transcript
       ? resolve(opts.transcript)
-      : resumedFromPath ?? resolve(`./transcripts/run-${ts}.md`);
+      : resumedFromPath ?? resolve(cwd, `transcripts/run-${ts}.md`);
     const appendToExisting = !!resumedState && !opts.transcript;
 
     const reviewer = makeAdapter(reviewerName, false, false); // reviewer never uses squad

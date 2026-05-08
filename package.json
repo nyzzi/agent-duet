@@ -1,6 +1,6 @@
 {
   "name": "agent-duet",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Two AI coding agents (Claude + GitHub Copilot) in a peer-review loop on a shared project.",
   "keywords": [
     "ai",
